@@ -1,0 +1,24 @@
+{
+  "name": "platzivideo",
+  "version": "1.0.0",
+  "description": "Proyecto Platzi video en la etapa del Curso Práctico de React JS de la Escuela de Javascript de Platzi",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/edwintrumpet/platzi-ej-curso-practico-de-react-platzivideo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/edwintrumpet/platzi-ej-curso-practico-de-react-platzivideo/issues"
+  },
+  "homepage": "https://github.com/edwintrumpet/platzi-ej-curso-practico-de-react-platzivideo#readme",
+  "dependencies": {
+    "react": "^16.11.0",
+    "react-dom": "^16.11.0"
+  }
+}
