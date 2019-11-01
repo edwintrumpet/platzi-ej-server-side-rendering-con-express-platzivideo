@@ -7,20 +7,12 @@ import CarouselItem from '../components/CarouselItem';
 import Footer from '../components/Footer';
 import '../assets/styles/App.scss';
 import '../assets/styles/Media.scss';
+import useInitialState from '../hooks/useInitialState';
+
+const API = 'http://localhost:3000/initialState';
 
 const App = () => {
-  const [videos, setVideos] = useState({
-    mylist: [],
-    trends: [],
-  });
-
-  useEffect(() => {
-    fetch('http://localhost:3000/initialState')
-      .then((response) => response.json())
-      .then((data) => setVideos(data));
-  }, []);
-
-  console.log(videos);
+  const initialState = useInitialState(API);
 
   return (
     <div className='App'>
