@@ -4,6 +4,7 @@ const useInitialState = (API) => {
   const [videos, setVideos] = useState({
     mylist: [],
     trends: [],
+    originals: [],
   });
 
   useEffect(() => {
