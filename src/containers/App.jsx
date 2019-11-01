@@ -13,9 +13,6 @@ const API = 'http://localhost:3000/initialState';
 
 const App = () => {
   const initialState = useInitialState(API);
-
-  console.log(initialState);
-
   return (
     <div className='App'>
       <Header />

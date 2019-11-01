@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/edwintrumpet/platzi-ej-curso-practico-de-react-platzivideo#readme",
   "dependencies": {
+    "prop-types": "^15.7.2",
     "react": "^16.11.0",
     "react-dom": "^16.11.0"
   },
