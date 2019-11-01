@@ -9,7 +9,10 @@ import '../assets/styles/App.scss';
 import '../assets/styles/Media.scss';
 
 const App = () => {
-  const [videos, setVideos] = useState([]);
+  const [videos, setVideos] = useState({
+    mylist: [],
+    trends: [],
+  });
 
   useEffect(() => {
     fetch('http://localhost:3000/initialState')
@@ -23,21 +26,20 @@ const App = () => {
     <div className='App'>
       <Header />
       <Search />
-      <Categories title='Mi lista'>
-        <Carousel>
-          <CarouselItem />
-          <CarouselItem />
-          <CarouselItem />
-          <CarouselItem />
-        </Carousel>
-      </Categories>
+      {videos.mylist.lenght > 0 && (
+        <Categories title='Mi lista'>
+          <Carousel>
+            <CarouselItem />
+            <CarouselItem />
+            <CarouselItem />
+            <CarouselItem />
+          </Carousel>
+        </Categories>
+      )}
 
       <Categories title='Tendencias'>
         <Carousel>
-          <CarouselItem />
-          <CarouselItem />
-          <CarouselItem />
-          <CarouselItem />
+          {videos.trends.map((item) => <CarouselItem key={item.id} {...item} />)}
         </Carousel>
       </Categories>
 
