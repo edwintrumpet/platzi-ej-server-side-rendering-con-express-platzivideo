@@ -17,7 +17,18 @@ const Home = () => {
       {initialState.mylist.length > 0 && (
         <Categories title='Mi lista'>
           <Carousel>
-            {initialState.mylist.map((item) => <CarouselItem key={item.id} {...item} />)}
+            {
+              initialState.mylist.map((item) => (
+                <CarouselItem
+                  key={item.id}
+                  cover={item.cover}
+                  title={item.title}
+                  year={item.year}
+                  contentRating={item.contentRating}
+                  duration={item.duration}
+                />
+              ))
+            }
           </Carousel>
         </Categories>
       )}
@@ -25,7 +36,18 @@ const Home = () => {
       {initialState.trends.length > 0 && (
         <Categories title='Tendencias'>
           <Carousel>
-            {initialState.trends.map((item) => <CarouselItem key={item.id} {...item} />)}
+            {
+              initialState.trends.map((item) => (
+                <CarouselItem
+                  key={item.id}
+                  cover={item.cover}
+                  title={item.title}
+                  year={item.year}
+                  contentRating={item.contentRating}
+                  duration={item.duration}
+                />
+              ))
+            }
           </Carousel>
         </Categories>
       )}
@@ -33,7 +55,18 @@ const Home = () => {
       {initialState.originals.length > 0 && (
         <Categories title='Originales de PlatziVideo'>
           <Carousel>
-            {initialState.originals.map((item) => <CarouselItem key={item.id} {...item} />)}
+            {
+              initialState.originals.map((item) => (
+                <CarouselItem
+                  key={item.id}
+                  cover={item.cover}
+                  title={item.title}
+                  year={item.year}
+                  contentRating={item.contentRating}
+                  duration={item.duration}
+                />
+              ))
+            }
           </Carousel>
         </Categories>
       )}
