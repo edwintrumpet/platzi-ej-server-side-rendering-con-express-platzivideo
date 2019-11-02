@@ -24,6 +24,7 @@ const Home = ({ mylist, trends, originals }) => {
                   year={item.year}
                   contentRating={item.contentRating}
                   duration={item.duration}
+                  isList
                 />
               ))
             }

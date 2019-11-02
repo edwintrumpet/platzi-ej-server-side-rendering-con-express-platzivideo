@@ -15,6 +15,7 @@ const CarouselItem = ({
   duration,
   setFavorite,
   deleteFavorite,
+  isList,
 }) => {
   const handleSetFavorite = () => {
     setFavorite({ id, cover, title, year, contentRating, duration });
@@ -29,18 +30,21 @@ const CarouselItem = ({
       <div className='carousel-item__details'>
         <div>
           <img className='carousel-item__details--img' src={playIcon} alt='Play Icon' />
-          <img
-            onClick={handleSetFavorite}
-            className='carousel-item__details--img'
-            src={plusIcon}
-            alt='Plus Icon'
-          />
-          <img
-            onClick={() => handleDeleteFavorite(id)}
-            className='carousel-item__details--img'
-            src='https://static.platzi.com/media/public/uploads/remove-icon_a56b8107-2c02-49ed-bead-308031b0dd76.png'
-            alt='Plus Icon'
-          />
+          {isList ? (
+            <img
+              onClick={() => handleDeleteFavorite(id)}
+              className='carousel-item__details--img'
+              src='https://static.platzi.com/media/public/uploads/remove-icon_a56b8107-2c02-49ed-bead-308031b0dd76.png'
+              alt='Plus Icon'
+            />
+          ) : (
+            <img
+              onClick={handleSetFavorite}
+              className='carousel-item__details--img'
+              src={plusIcon}
+              alt='Plus Icon'
+            />
+          )}
         </div>
         <p className='carousel-item__details--title'>{title}</p>
         <p className='carousel-item__details--subtitle'>{`${year} ${contentRating} ${duration}`}</p>
