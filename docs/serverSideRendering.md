@@ -1,5 +1,7 @@
 # Server side rendering
 
+## Creación de servidor y archivos necesarios
+
 Dentro del directorio `src` creamos el directorio `server` donde almacenaremos los archivos del servidor y el directorio `frontend` donde almacenaremos los archivos de react
 
 instalamos **@babel/register** para hacer un bind en tiempo real de los presets de babel
@@ -71,6 +73,8 @@ Agregamos el script **start:dev** en el `package.json`
 }
 ```
 
+## Configuración del linter
+
 Instalamos **eslint-loader**
 
 ```shell
@@ -89,10 +93,79 @@ module: {
             use: {
                 loader: 'eslint-loader',
             },
-        }
-    ]
-}
+        },
+    ],
+},
 ```
 
 Con esto no funcionará nuestra aplicación si el linter detecta algún error, por lo que debemos tener bastante precaución y corregir todos nuestros errores.
 
+## Preparación de archivos CSS
+
+Instalamos las dependencias de desarrollo
+
+```shell
+npm i babel-plugin-transform-class-properties react-hot-loader babel-plugin-transform-object-assign -D
+```
+
+En el archivo `.babelrc` agregamos la configuración del entorno
+
+```json
+"env": {
+    "development": {
+        "plugins": [
+            "babel-plugin-transform-class-properties",
+            "react-hot-loader/babel",
+            "babel-plugin-tranform-object-assign"
+        ]
+    }
+}
+```
+
+Instalamos **autoprefixer** y **postcss-loader** como dependencia de desarrollo
+
+```shell
+npm i autoprefixer postcss-loader -D
+```
+
+En el archivo `webpack.config.js` importamos *webpack* y *autoprefixer*
+
+```javascript
+const autoprefixer = require('autoprefixer');
+const webpack = require('webpack');
+```
+
+En la regla para css agregamos el loader *postcss-loader*
+
+```javascript
+module: {
+    rules: [
+        {
+            test: /\.(s*)css$/,
+            use: [
+                {
+                    loader: MiniCssExtractPlugin.loader,
+                },
+                'css-loader',
+                'sass-loader',
+                'postcss-loader',
+            ],
+        },
+    ],
+},
+
+```
+
+Instalamos el plugin para agregar el autoprefijo a la configuración de css
+
+```javascript
+plugins: [
+    new webpack.LoaderOptionsPlugin({
+        options: {
+            postcss: [
+                autoprefixer();
+            ],
+        },
+    }),
+],
+```
