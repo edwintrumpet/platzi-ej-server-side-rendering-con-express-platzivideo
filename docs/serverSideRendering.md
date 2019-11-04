@@ -71,3 +71,28 @@ Agregamos el script **start:dev** en el `package.json`
 }
 ```
 
+Instalamos **eslint-loader**
+
+```shell
+npm i eslint-loader -D
+```
+
+Agrego la siguiente regla al archivo `webpack.config.js`
+
+```javascript
+module: {
+    rules: [
+        {
+            test: /\.(js|jsx)$/,
+            exclude: /node_modules/,
+            enforce: 'pre',
+            use: {
+                loader: 'eslint-loader',
+            },
+        }
+    ]
+}
+```
+
+Con esto no funcionará nuestra aplicación si el linter detecta algún error, por lo que debemos tener bastante precaución y corregir todos nuestros errores.
+
