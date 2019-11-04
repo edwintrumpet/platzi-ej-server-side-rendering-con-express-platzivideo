@@ -1,7 +1,7 @@
 {
   "name": "platzivideo",
   "version": "1.0.0",
-  "description": "Proyecto Platzi video en la etapa del Curso Práctico de React JS de la Escuela de Javascript de Platzi",
+  "description": "Proyecto Platzi video en la etapa del Curso de Server side rendering con Express de la Escuela de Javascript de Platzi",
   "main": "index.js",
   "scripts": {
     "build": "webpack --mode production",
