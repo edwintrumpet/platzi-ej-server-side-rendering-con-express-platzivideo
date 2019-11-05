@@ -415,3 +415,75 @@ module: {
 ```
 
 Y removemos desde los archivos las importaciones directas
+
+## Aplicando history y creando rutas para el servidor
+
+Instalamos dependencias
+
+```shell
+npm i history react-router
+```
+
+En el archivo `frontend/index.js` importamos las dependencias y encapsulamos nuestra aplicación
+
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
+import { createStore, compose } from 'redux';
+import { Router } from 'react-router';
+import { createBrowserHistory } from 'history';
+import reducer from './reducers';
+import App from './routes/App';
+
+const initialState = {...
+};
+
+const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+const store = createStore(reducer, initialState, composeEnhancers());
+const history = createBrowserHistory();
+
+ReactDOM.render(
+  <Provider store={store}>
+    <Router history={history}>
+      <App />
+    </Router>
+  </Provider>,
+  document.getElementById('root'),
+);
+
+```
+
+Creamos el archivo `frontend/routes/serverRoutes.js` donde ponemos las rutas del servidor
+
+```javascript
+import Home from '../containers/Home';
+import Login from '../containers/Login';
+import Register from '../containers/Register';
+import NotFound from '../containers/NotFound';
+
+const serverRoutes = [
+  {
+    path: '/',
+    component: Home,
+    exact: true,
+  },
+  {
+    path: '/login',
+    component: Login,
+    exact: true,
+  },
+  {
+    path: '/register',
+    component: Register,
+    exact: true,
+  },
+  {
+    name: 'NotFound',
+    component: NotFound,
+  },
+];
+
+export default serverRoutes;
+
+```
