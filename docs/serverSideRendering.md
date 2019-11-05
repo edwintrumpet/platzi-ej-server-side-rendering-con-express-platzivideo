@@ -185,24 +185,24 @@ module.exports = {
 Agregamos el parámetro _optimizations_ en el archivo `webpack.config.js`
 
 ```javascript
-optimizations: {
+optimization: {
     splitChunks: {
-        chunks: 'async',
-        name: true,
-        cacheGroups: {
-            vendors: {
-                name: 'vendors',
-                chunk: 'all',
-                reuseExistingChunk: true,
-                priority: 1,
-                fileName: 'assets/vendor.js',
-                enforce: true,
-                test(module, chunks) {
-                    const name = module.nameForCondition && module.nameForCondition();
-                    return chunks.some((chunk) => chunk.name !== 'vendor' && /[\\/]node_modules[\\/]/.test(name));
-                },
-            },
+      chunks: 'async',
+      name: true,
+      cacheGroups: {
+        vendors: {
+          name: 'vendors',
+          chunks: 'all',
+          reuseExistingChunk: true,
+          priority: 1,
+          filename: 'assets/vendor.js',
+          enforce: true,
+          test(module, chunks) {
+            const name = module.nameForCondition && module.nameForCondition();
+            return chunks.some((chunks) => chunks.name !== 'vendor' && /[\\/]node_modules[\\/]/.test(name));
+          },
         },
+      },
     },
 },
 ```
@@ -213,4 +213,46 @@ Agregamos el plugin
 plugins: [
     new webpack.HotModuleReplacementPlugin(),
 ],
+```
+
+## Integración de Webpack con Express
+
+Instalamos las dependencias
+
+```shell
+npm i webpack-dev-middleware webpack-hot-middleware
+```
+
+Importamos la webpack en el archivo `server.js`
+
+```javascript
+import webpack from 'webpack';
+```
+
+Después de declarar la aplicación de express y antes de las rutas usamos el entorno obtenido desde ENV para configurar webpack
+
+```javascript
+const app = express();
+
+if (ENV === 'development') {
+  console.log('Loading dev config');
+  const webpackConfig = require('../../webpack.config');
+  const webpackDevMiddleware = require('webpack-dev-middleware');
+  const webpackHotMiddleware = require('webpack-hot-middleware');
+  const compiler = webpack(webpackConfig);
+  const serverConfig = {
+    contentBase: `http://localhost:${PORT}`,
+    port: PORT,
+    publicPath: webpackConfig.output.publicPath,
+    hot: true,
+    historyApiFallback: true,
+    stats: { colors: true },
+  };
+  app.use(webpackDevMiddleware(compiler, serverConfig));
+  app.use(webpackHotMiddleware(compiler));
+}
+
+app.get('*', (req, res) => {
+  res.status(200).json({ holamundo: true });
+});
 ```

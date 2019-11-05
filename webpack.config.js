@@ -14,21 +14,21 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.jsx'],
   },
-  optimizations: {
+  optimization: {
     splitChunks: {
       chunks: 'async',
       name: true,
       cacheGroups: {
         vendors: {
           name: 'vendors',
-          chunk: 'all',
+          chunks: 'all',
           reuseExistingChunk: true,
           priority: 1,
-          fileName: 'assets/vendor.js',
+          filename: 'assets/vendor.js',
           enforce: true,
           test(module, chunks) {
             const name = module.nameForCondition && module.nameForCondition();
-            return chunks.some((chunk) => chunk.name !== 'vendor' && /[\\/]node_modules[\\/]/.test(name));
+            return chunks.some((chunks) => chunks.name !== 'vendor' && /[\\/]node_modules[\\/]/.test(name));
           },
         },
       },
