@@ -169,3 +169,48 @@ plugins: [
     }),
 ],
 ```
+
+Creamos el archivo `postcss.config.js` en la raiz del proyecto
+
+```javascript
+module.exports = {
+    plugins: {
+        'autoprefixer': {},
+    },
+};
+```
+
+## Vendor files
+
+Agregamos el parámetro _optimizations_ en el archivo `webpack.config.js`
+
+```javascript
+optimizations: {
+    splitChunks: {
+        chunks: 'async',
+        name: true,
+        cacheGroups: {
+            vendors: {
+                name: 'vendors',
+                chunk: 'all',
+                reuseExistingChunk: true,
+                priority: 1,
+                fileName: 'assets/vendor.js',
+                enforce: true,
+                test(module, chunks) {
+                    const name = module.nameForCondition && module.nameForCondition();
+                    return chunks.some((chunk) => chunk.name !== 'vendor' && /[\\/]node_modules[\\/]/.test(name));
+                },
+            },
+        },
+    },
+},
+```
+
+Agregamos el plugin
+
+```javascript
+plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+],
+```
