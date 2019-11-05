@@ -315,14 +315,6 @@ module.exports = {
         },
       },
       {
-        test: /\.html$/,
-        use: [
-          {
-            loader: 'html-loader',
-          },
-        ],
-      },
-      {
         test: /\.(s*)css$/,
         use: [
           {
@@ -390,3 +382,36 @@ app.get('*', (req, res) => {
   `);
 });
 ```
+
+## Agregar variables de Sass desde Webpack
+
+En el archivo `webpack.config.js` modificamos la regla que tenemos para los estilos.
+
+```javascript
+module: {
+  rules: [
+    {
+      test: /\.(s*)css$/,
+      use: [
+        {
+          loader: MiniCssExtractPlugin.loader,
+        },
+        'css-loader',
+        'postcss-loader',
+        {
+          loader: 'sass-loader',
+          options: {
+            prependData: `
+            @import "${path.resolve(__dirname, 'src/frontend/assets/styles/Vars.scss')}";
+            @import "${path.resolve(__dirname, 'src/frontend/assets/styles/Media.scss')}";
+            @import "${path.resolve(__dirname, 'src/frontend/assets/styles/Base.scss')}";
+            `,
+          },
+        },
+      ],
+    },
+  ]
+}
+```
+
+Y removemos desde los archivos las importaciones directas
