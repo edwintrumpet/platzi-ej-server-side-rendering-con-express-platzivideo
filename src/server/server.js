@@ -28,7 +28,24 @@ if (ENV === 'development') {
 }
 
 app.get('*', (req, res) => {
-  res.status(200).json({ holamundo: true });
+  res.send(`
+  <!DOCTYPE html>
+  <html lang="es">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Platzivideo</title>
+      <link rel="stylesheet" href="assets/app.css" type="text/css"></link>
+  </head>
+  <body>
+      <noscript>This application requires javascript to work!</noscript>
+      <div id="root"></div>
+      <script src="assets/app.js" type="text/javascript"></script>
+      <script src="assets/vendor.js" type="text/javascript"></script>
+  </body>
+  </html>
+  `);
 });
 
 app.listen(PORT, (err) => {

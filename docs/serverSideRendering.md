@@ -256,3 +256,137 @@ app.get('*', (req, res) => {
   res.status(200).json({ holamundo: true });
 });
 ```
+
+## Servir React con Express
+
+En el archivo `webpack.config.js` hacemos algunas modificaciones
+
+```javascript
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const autoprefixer = require('autoprefixer');
+const webpack = require('webpack');
+
+module.exports = {
+  entry: './src/frontend/index.js',
+  mode: 'development',
+  output: {
+    path: '/',
+    filename: 'assets/app.js',
+    publicPath: '/',
+  },
+  resolve: {
+    extensions: ['.js', '.jsx'],
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'async',
+      name: true,
+      cacheGroups: {
+        vendors: {
+          name: 'vendors',
+          chunks: 'all',
+          reuseExistingChunk: true,
+          priority: 1,
+          filename: 'assets/vendor.js',
+          enforce: true,
+          test(module, chunks) {
+            const name = module.nameForCondition && module.nameForCondition();
+            return chunks.some((chunks) => chunks.name !== 'vendor' && /[\\/]node_modules[\\/]/.test(name));
+          },
+        },
+      },
+    },
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        enforce: 'pre',
+        use: {
+          loader: 'eslint-loader',
+        },
+      },
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+        },
+      },
+      {
+        test: /\.html$/,
+        use: [
+          {
+            loader: 'html-loader',
+          },
+        ],
+      },
+      {
+        test: /\.(s*)css$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+          },
+          'css-loader',
+          'sass-loader',
+          'postcss-loader',
+        ],
+      },
+      {
+        test: /\.(png|gif|jpg)$/,
+        use: [
+          {
+            'loader': 'file-loader',
+            options: {
+              name: 'assets/[hash].[ext]',
+            },
+          },
+        ],
+      },
+    ],
+  },
+  devServer: {
+    historyApiFallback: true,
+  },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        postcss: [
+          autoprefixer(),
+        ],
+      },
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'assets/app.css',
+    }),
+  ],
+};
+
+```
+
+En la ruta de Express enviamos un string con el html a renderizar
+
+```javascript
+app.get('*', (req, res) => {
+  res.send(`
+  <!DOCTYPE html>
+  <html lang="es">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Platzivideo</title>
+      <link rel="stylesheet" href="assets/app.css" type="text/css"></link>
+  </head>
+  <body>
+      <noscript>This application requires javascript to work!</noscript>
+      <div id="root"></div>
+      <script src="assets/app.js" type="text/javascript"></script>
+      <script src="assets/vendor.js" type="text/javascript"></script>
+  </body>
+  </html>
+  `);
+});
+```
