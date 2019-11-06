@@ -1,6 +1,6 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import webpack from 'webpack';
+import webpack from 'webpack'; //eslint-disable-line
 import main from './routes/main';
 
 dotenv.config();
@@ -12,9 +12,9 @@ const app = express();
 
 if (ENV === 'development') {
   console.log('Loading dev config');
-  const webpackConfig = require('../../webpack.config');
-  const webpackDevMiddleware = require('webpack-dev-middleware');
-  const webpackHotMiddleware = require('webpack-hot-middleware');
+  const webpackConfig = require('../../webpack.config'); // eslint-disable-line global-require
+  const webpackDevMiddleware = require('webpack-dev-middleware'); // eslint-disable-line global-require
+  const webpackHotMiddleware = require('webpack-hot-middleware'); // eslint-disable-line global-require
   const compiler = webpack(webpackConfig);
   const serverConfig = {
     contentBase: `http://localhost:${PORT}`,

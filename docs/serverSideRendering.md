@@ -69,8 +69,14 @@ Agregamos el script **start:dev** en el `package.json`
 
 ```json
 "scripts": {
-    "start:dev": "nodemon src/server.index.js --exact babel-node"
+    "start:dev": "nodemon src/server/index.js --exact babel-node"
 }
+```
+
+Para que funcione el script que lanza la aplicación frontend modificamos el parámetro _entry_ en el `package.config.js` para que coincida con la refactorización
+
+```javascript
+entry: './src/frontend/index.js',
 ```
 
 ## Configuración del linter
@@ -163,7 +169,7 @@ plugins: [
     new webpack.LoaderOptionsPlugin({
         options: {
             postcss: [
-                autoprefixer();
+                autoprefixer(),
             ],
         },
     }),
@@ -606,3 +612,93 @@ require('./server.js');
 
 ```
 
+## Hydrate y estado de Redux desde Express
+
+En el archivo `server/routes/main.js` definimos el preloadedState y lo pasamos como segundo parámetro en la función de response
+
+```javascript
+const preloadedState = store.getState();
+res.send(render(html, preloadedState));
+```
+
+En el archivo `frontend/index.js` cambiamos el método render por hydrate
+
+```javascript
+import { hydrate } from 'react-dom';
+
+...
+
+hydrate(
+  <Provider store={store}>
+    <Router history={history}>
+      <App />
+    </Router>
+  </Provider>,
+  document.getElementById('root'),
+);
+```
+
+En nuestro archivo `server/render/index.js` agregamos preloadState a los parámetros que recibe la función y le agregamos un script para cargar el preloadState
+
+```javascript
+const render = (html, preloadedState) => {
+  return (`
+  <!DOCTYPE html>
+  <html lang="es">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Platzivideo</title>
+      <link rel="stylesheet" href="assets/app.css" type="text/css"></link>
+  </head>
+  <body>
+      <div id="root">${html}</div>
+      <script>
+          // WARNING: See the following for security issues around embedding JSON in HTML:
+          // http://redux.js.org/recipes/ServerRendering.html#security-considerations
+          window.__PRELOADED_STATE__ = ${JSON.stringify(preloadedState).replace(
+      /</g,
+      '\\u003c',
+    )}
+        </script>
+      <script src="assets/app.js" type="text/javascript"></script>
+      <script src="assets/vendor.js" type="text/javascript"></script>
+  </body>
+  </html>
+  `);
+};
+
+export default render;
+
+```
+
+En el archivo `frontend/index.js` en lugar de importar el initialState definimos el preloadState y lo usamos y validamos con un condicional que se llame el hidrate si window es undefined
+
+```javascript
+import React from 'react';
+import { hydrate } from 'react-dom';
+import { Provider } from 'react-redux';
+import { createStore, compose } from 'redux';
+import { Router } from 'react-router';
+import { createBrowserHistory } from 'history';
+import reducer from './reducers';
+import App from './routes/App';
+
+if (typeof window !== 'undefined') {
+  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+  const preloadedState = window.__PRELOADED_STATE__;
+  const store = createStore(reducer, preloadedState, composeEnhancers());
+  const history = createBrowserHistory();
+
+  hydrate(
+    <Provider store={store}>
+      <Router history={history}>
+        <App />
+      </Router>
+    </Provider>,
+    document.getElementById('root'),
+  );
+}
+
+```
