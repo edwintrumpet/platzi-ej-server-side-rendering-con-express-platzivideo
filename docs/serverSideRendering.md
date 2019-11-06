@@ -487,3 +487,97 @@ const serverRoutes = [
 export default serverRoutes;
 
 ```
+## Server side rendering
+
+Instalamos **react-router-config**
+
+```shell
+npm i react-router-config
+```
+
+Creamos en archivo `server/routes/main.js`
+
+```javascript
+import React from 'react';
+import { renderToString } from 'react-dom/server';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import { StaticRouter } from 'react-router';
+import { renderRoutes } from 'react-router-config';
+import Routes from '../../frontend/routes/serverRoutes';
+import Layout from '../../frontend/components/Layout';
+import reducer from '../../frontend/reducers';
+import initialState from '../../frontend/initialState';
+import render from '../render';
+
+const main = (req, res, next) => {
+  try {
+    const store = createStore(reducer, initialState);
+    const html = renderToString(
+      <Provider store={store}>
+        <StaticRouter location={req.url} context={{}}>
+          <Layout>
+            {renderRoutes(Routes)}
+          </Layout>
+        </StaticRouter>
+      </Provider>,
+    );
+    res.send(render(html));
+  } catch (err) {
+    next(err);
+  }
+};
+
+export default main;
+
+```
+
+Creamos el archivo `server/render/index.js`
+
+```javascript
+const render = (html) => {
+  return (`
+  <!DOCTYPE html>
+  <html lang="es">
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+      <title>Platzivideo</title>
+      <link rel="stylesheet" href="assets/app.css" type="text/css"></link>
+  </head>
+  <body>
+      <noscript>This application requires javascript to work!</noscript>
+      <div id="root">${html}</div>
+      <script src="assets/app.js" type="text/javascript"></script>
+      <script src="assets/vendor.js" type="text/javascript"></script>
+  </body>
+  </html>
+  `);
+};
+
+export default render;
+
+```
+
+Y en el archivo `server.js` importamos el archivo `server/routes/main.js` y lo usamos en la ruta en cambio del template que teníamos.
+
+```javascript
+import main from './routes/main';
+```
+
+```javascript
+app.get('*', main);
+```
+
+Instalamos la dependencia **ignore-styles**
+
+```shell
+npm i ignore-styles
+```
+
+La importamos en el archivo `server/index.js`
+
+```javascript
+require('ignore-styles');
+```
