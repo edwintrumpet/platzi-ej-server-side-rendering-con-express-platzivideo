@@ -748,10 +748,10 @@ if (typeof window !== 'undefined') {
   ...
 ```
 
-Instalamos la dependencia **terser-webpack-plugin**
+Instalamos la dependencia de desarrollo **terser-webpack-plugin**
 
 ```shell
-npm i terser-webpack-plugin
+npm i terser-webpack-plugin -D
 ```
 
 Y hacemos una modificaciones al archivo `webpack.config.js`
@@ -871,3 +871,37 @@ module.exports = {
 
 ```
 
+## Compresión de Assets
+
+Instalamos la dependencia de desarrollo **compression-webpack-plugin**
+
+```shell
+npm i compression-webpack-plugin -D
+```
+
+En el archivo `webpack.config.js` lo importamos y lo agregamos en producción a nuestros plugins
+
+```javascript
+const CompressionPlugin = require('compression-webpack-plugin');
+```
+
+```javascript
+plugins: [
+  isProd ? new CompressionPlugin({
+    test: /\.js$|\.css$/,
+    filename: '[path].gz',
+  }) : false,
+],
+```
+
+En el archivo `package.json` vamos a eliminar el script que estábamos manejando para client side rendering y agregamos los siguientes
+
+```json
+"scripts": {
+  "build": "webpack-cli --config webpack.config.js --colors",
+  "start:prod": "node src/server/index.js",
+  "start:dev": "nodemon src/server/index.js --exact babel-node"
+}
+```
+
+Para finalizar cambiamos de development a production en el archivo `.env`
