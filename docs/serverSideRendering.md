@@ -702,3 +702,36 @@ if (typeof window !== 'undefined') {
 }
 
 ```
+
+## Configurando nuestro servidor para producción
+
+Instalamos **helmet**
+
+```shell
+npm i helmet
+```
+
+importamos _helmet_ en el archivo `server.js`
+
+```javascript
+import helmet from 'helmet';
+```
+
+En el condicional en el que revisamos el entorno usamos _helmet_ y configuramos las cabeceras
+
+```javascript
+if (ENV === 'development') {
+  ...
+} else {
+  app.use(helmet());
+  app.use(helmet.permittedCrossDomainPolicies());
+  app.disable('x-powered-by');
+}
+```
+
+Creamos el directorio `server/public/` y la usamos para los archivos estáticos que usará en producción
+
+```javascript
+const app = express();
+app.use(express.static(`${__dirname}/public`));
+```
