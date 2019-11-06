@@ -735,3 +735,139 @@ Creamos el directorio `server/public/` y la usamos para los archivos estáticos 
 const app = express();
 app.use(express.static(`${__dirname}/public`));
 ```
+
+## Configurando el frontend y webpack para producción
+
+En el archivo `frontend/index.js` vamos a crear un condicional que mire si el entorno es de producción y solo permita usar Redux dev tools en desarrollo
+
+```javascript
+if (typeof window !== 'undefined') {
+  let composeEnhancers;
+  if (process.env.NODE_ENV === 'production') composeEnhancers = compose;
+  else composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+  ...
+```
+
+Instalamos la dependencia **terser-webpack-plugin**
+
+```shell
+npm i terser-webpack-plugin
+```
+
+Y hacemos una modificaciones al archivo `webpack.config.js`
+
+```javascript
+const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const autoprefixer = require('autoprefixer');
+const webpack = require('webpack');
+const dotenv = require('dotenv');
+const TerserPLugin = require('terser-webpack-plugin');
+
+dotenv.config();
+
+const isProd = process.env.NODE_ENV === 'production';
+
+module.exports = {
+  devtool: isProd ? 'hidden-source-map' : 'cheap-source-map',
+  entry: './src/frontend/index.js',
+  mode: process.env.NODE_ENV,
+  output: {
+    path: isProd ? path.join(process.cwd(), './src/server/public') : '/',
+    filename: 'assets/app.js',
+    publicPath: '/',
+  },
+  resolve: {
+    extensions: ['.js', '.jsx'],
+  },
+  optimization: {
+    minimizer: isProd ? [new TerserPLugin()] : [],
+    splitChunks: {
+      chunks: 'async',
+      name: true,
+      cacheGroups: {
+        vendors: {
+          name: 'vendors',
+          chunks: 'all',
+          reuseExistingChunk: true,
+          priority: 1,
+          filename: 'assets/vendor.js',
+          enforce: true,
+          test(module, chunks) {
+            const name = module.nameForCondition && module.nameForCondition();
+            return chunks.some((chunks) => chunks.name !== 'vendor' && /[\\/]node_modules[\\/]/.test(name));
+          },
+        },
+      },
+    },
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        enforce: 'pre',
+        use: {
+          loader: 'eslint-loader',
+        },
+      },
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+        },
+      },
+      {
+        test: /\.(s*)css$/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+          },
+          'css-loader',
+          'postcss-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              prependData: `
+              @import "${path.resolve(__dirname, 'src/frontend/assets/styles/Vars.scss')}";
+              @import "${path.resolve(__dirname, 'src/frontend/assets/styles/Media.scss')}";
+              @import "${path.resolve(__dirname, 'src/frontend/assets/styles/Base.scss')}";
+              `,
+            },
+          },
+        ],
+      },
+      {
+        test: /\.(png|gif|jpg)$/,
+        use: [
+          {
+            'loader': 'file-loader',
+            options: {
+              name: 'assets/[hash].[ext]',
+            },
+          },
+        ],
+      },
+    ],
+  },
+  devServer: {
+    historyApiFallback: true,
+  },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.LoaderOptionsPlugin({
+      options: {
+        postcss: [
+          autoprefixer(),
+        ],
+      },
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'assets/app.css',
+    }),
+  ],
+};
+
+```
+
