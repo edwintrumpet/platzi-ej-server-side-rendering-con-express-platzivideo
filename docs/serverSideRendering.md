@@ -905,3 +905,6 @@ En el archivo `package.json` vamos a eliminar el script que estábamos manejando
 ```
 
 Para finalizar cambiamos de development a production en el archivo `.env`
+
+## Hashes
+
